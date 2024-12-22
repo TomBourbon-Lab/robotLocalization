@@ -13,7 +13,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():        
         try:
             try:
-                    (trans,rot) = listener.lookupTransform("utm", "odom", rospy.Time(0))
+                    (trans,rot) = listener.lookupTransform("utm", "base_link", rospy.Time(0))
                     break
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue

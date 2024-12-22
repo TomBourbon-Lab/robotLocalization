@@ -2,10 +2,10 @@
 
 <launch>
 
-  <param name="use_sim_time" value="true" />
+    <param name="use_sim_time" value="true" />
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" clear_params="true">
         <!--rosparam command="load" file="$(find robot_localization)/params/navsat_transform_template.yaml" />-->
-        
+
         <param name="yaw_offset" value="1.5708963"/><!--heading data from IMU assumed pointing east, if north, put pi/2=1.5707963-->
         <param name="zero_altitude" value="true"/>
         <param name="broadcast_cartesian_transform" value="true"/><!-- between utm and the frame of the odometry-->
@@ -15,28 +15,31 @@
         <param name="wait_for_datum" value="false"/>
         <param name="publish_filtered_gps" value="true"/>
         <param name="transform_timeout" value="0"/>
-        <remap from="imu/data" to="/vectornav/IMUfix"/>
+        <remap from="imu/data" to="/vectornav/IMU"/>
         <remap from="odometry/filtered" to="/warthog_velocity_controller/odom"/>
-        <remap from="gps/fix" to="/vectornav/GPSfix"/>
+        <remap from="gps/fix" to="/vectornav/xGPSfix"/>
 
 
     </node>
-    <node pkg="localization" type="tf_origin.py" name="tf_origin_node" output="screen"  >  
+    <node pkg="reillis_launch" type="tf_origin.py" name="tf_origin_node" output="screen"  >  
     </node>
-    <node pkg="localization" type="gpsfix.py" name="gps_fix_node" output="screen"  >  
+    <node pkg="reillis_launch" type="gpsfix.py" name="gps_fix_node" output="screen"  >  
     </node>
 
-    <node pkg="tf" type="static_transform_publisher" name="enu2ned_broadcaster" args="0 0 0 1.57076 0 -3.1415  /base_link /vnav_link 100"/>    <!--
-    <node pkg="gps_common" type="utm_odometry_node" name="utm_node" output="screen"  >
+    <node pkg="tf" type="static_transform_publisher" name="enu2ned_broadcaster" args="0 0 0 1.57076 0 -3.1415  base_link vnav_link 100"/>    
+    <node pkg="tf" type="static_transform_publisher" name="utmz_enu2ned_broadcaster" args="0 0 0 1.57076 0 -3.1415  utm_zero utm_zero_ned 100"/>    
+    <node pkg="tf" type="static_transform_publisher" name="utm_enu2ned_broadcaster" args="0 0 0 1.57076 0 -3.1415  utm utm_ned 100"/>    
 
-        <param name="frame_id" value="world"/>
+   <node pkg="gps_common" type="utm_odometry_node" name="utm_node" output="screen"  >
+        <param name="frame_id" value="utm"/>
         <param name="child_frame_id" value="world_utm"/>
         <remap from="fix" to="/vectornav/GPS"/>
         <remap from="odom" to="/vectornav/odom"/>
     </node>    
 
-    <node pkg="localization" type="loc.py" name="loc_node" output="screen"  >
+        <!--
+        <node pkg="localization" type="loc.py" name="loc_node" output="screen"  >
         <remap from="odom" to="/vectornav/odom"/>
-    </node>
+        </node>
     -->
-</launch>
+    </launch>

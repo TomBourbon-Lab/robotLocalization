@@ -2,22 +2,21 @@
 import rospy
 
 from nav_msgs.msg import Odometry	       
+from sensor_msgs.msg import Imu
 
 import tf
 
 
 
 utmInit=None
+imuQ=None
 
 broadcaster = tf.TransformBroadcaster()	
 
+def imuCallback(msg):
+    global imuQ
+    imuQ = msg.orientation
 
-
-#This node takes the pose in utm from the imu (internal fusion of its gps and
-
-#imu), and creates a new frame with the origin at the location of the robot when
-
-#the node starts, it publishes the odometry and broadcasts the tf
 
 def utmCallback(msg):
 
@@ -37,19 +36,17 @@ def utmCallback(msg):
 
     q = [0, 0 , 0 , 1]
 
-    broadcaster.sendTransform(p, q, msg.header.stamp, "utm", "odom_imu")
+    broadcaster.sendTransform(p, q, msg.header.stamp, "utm", "utm_zero")
 
 
 
     p = [msg.pose.pose.position.x - utmInit.position.x, msg.pose.pose.position.y - utmInit.position.y, msg.pose.pose.position.z - utmInit.position.z]
 
-    q = [msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w]
-
-    
+    q = [imuQ.x, imuQ.y, imuQ.z, imuQ.w]
 
     #broadcast the tf from this new frame to the robot
 
-    broadcaster.sendTransform(p, q, msg.header.stamp, "odom_imu", "imu_link")
+    broadcaster.sendTransform(p, q, msg.header.stamp, "utm_zero", "odom")
 
 
 
@@ -59,7 +56,8 @@ if __name__ == '__main__':
 
     rospy.init_node('gps2odom')
 
-    utmSub = rospy.Subscriber('odom', Odometry, utmCallback, queue_size=1)
+    utmSub = rospy.Subscriber('/utm/odom', Odometry, utmCallback, queue_size=1)
+    imuSub = rospy.Subscriber('/vectornav/IMU', Imu, imuCallback, queue_size=1)
 
     rospy.spin()
 

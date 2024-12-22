@@ -1,0 +1,10 @@
+
+
+<launch>
+
+    <param name="use_sim_time" value="true" />
+
+    <node pkg="tf" type="static_transform_publisher" name="odom_enu2ned_broadcaster" args="0 0 0 0 0 3.1415  base_odom base_link 100"/>    
+    <node pkg="tf" type="static_transform_publisher" name="base_enu2ned_broadcaster" args="0 0 0 1.57076 0 -3.1415  odom_enu odom 100"/>    
+
+</launch>
