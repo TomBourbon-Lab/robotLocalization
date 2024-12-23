@@ -7,4 +7,32 @@
     <node pkg="tf" type="static_transform_publisher" name="odom_enu2ned_broadcaster" args="0 0 0 0 0 3.1415  base_odom base_link 100"/>    
     <node pkg="tf" type="static_transform_publisher" name="base_enu2ned_broadcaster" args="0 0 0 1.57076 0 -3.1415  odom_enu odom 100"/>    
 
+    <!--
+    <node pkg="reillis_launch" type="tf_origin.py" name="tf_origin_node" output="screen"  >  
+    </node>
+    -->
+
+    <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" clear_params="true" output="screen">
+        <!--rosparam command="load" file="$(find robot_localization)/params/navsat_transform_template.yaml" />-->
+
+        <param name="yaw_offset" value="1.5708963"/><!--heading data from IMU assumed pointing east, if north, put pi/2=1.5707963-->
+        <param name="zero_altitude" value="true"/>
+        <param name="broadcast_cartesian_transform" value="true"/><!-- between utm and the frame of the odometry-->
+        <param name="broadcast_cartesian_transform_as_parent_frame"
+            value="true"/>
+        <param name="broadcast_cartesian_initial_transform"
+            value="true"/>
+        <param name="use_odometry_yaw" value="false"/>
+        <param name="wait_for_datum" value="false"/>
+        <param name="publish_filtered_gps" value="true"/>
+        <param name="transform_timeout" value="0"/>
+        <param name="cartesian_frame_id" value="utm"/>
+        <param name="force_odom_frame_id" value="odom_enu"/>
+        <remap from="imu/data" to="/vectornav/IMU"/>
+        <!--remap from="odometry/filtered" to="/warthog_velocity_controller/odom"/-->
+        <remap from="gps/fix" to="/vectornav/GPS"/>
+
+
+    </node>
+
 </launch>

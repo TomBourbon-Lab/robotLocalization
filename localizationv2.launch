@@ -17,7 +17,7 @@
         <param name="transform_timeout" value="0"/>
         <remap from="imu/data" to="/vectornav/IMU"/>
         <remap from="odometry/filtered" to="/warthog_velocity_controller/odom"/>
-        <remap from="gps/fix" to="/vectornav/xGPSfix"/>
+        <remap from="gps/fix" to="/vectornav/GPS"/>
 
 
     </node>
